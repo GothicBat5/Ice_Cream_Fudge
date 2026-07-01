@@ -33,8 +33,15 @@ pub unsafe extern "C" fn servo_webview_builder_set_url(
 ) -> i32 {
     assert!(!builder.is_null(), "builder pointer must not be null");
     assert!(!url.is_null(), "url pointer must not be null");
-    let builder = unsafe { &mut *builder };
-    let url_str = unsafe { CStr::from_ptr(url) }.to_str().unwrap();
+    
+    let builder = unsafe { 
+        &mut *builder 
+    };
+    
+    let url_str = unsafe { 
+        CStr::from_ptr(url) 
+    }.to_str().unwrap();
+    
     match url::Url::parse(url_str) {
         Ok(parsed) => {
             builder.url = Some(parsed);
@@ -80,7 +87,10 @@ pub unsafe extern "C" fn servo_webview_builder_free(builder: *mut ServoWebViewBu
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn servo_webview_paint(webview: *mut WebView) {
     assert!(!webview.is_null(), "webview pointer must not be null");
-    let webview = unsafe { &*webview };
+    
+    let webview = unsafe { 
+        &*webview 
+    };
     webview.paint();
 }
 #[unsafe(no_mangle)]
