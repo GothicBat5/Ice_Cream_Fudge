@@ -90,9 +90,7 @@ pub unsafe extern "C" fn servo_builder_set_event_loop_waker(builder: *mut ServoB
 pub unsafe extern "C" fn servo_builder_build(builder: *mut ServoBuilder) -> *mut servo_api::Servo {
     assert!(!builder.is_null(), "builder pointer must not be null");
     let mut rust_builder = servo_api::ServoBuilder::default();
-
     let builder = unsafe { &mut *builder };
-
     if let Some(options) = builder.options.take() {
         rust_builder = rust_builder.opts(*options);
     }
