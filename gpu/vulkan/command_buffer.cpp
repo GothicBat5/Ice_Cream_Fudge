@@ -9,38 +9,23 @@ namespace gpu {
 
 namespace {
 
-VkPipelineStageFlags GetPipelineStageFlags(
-    const VulkanDeviceQueue* device_queue,
-    const VkImageLayout layout)
+VkPipelineStageFlags GetPipelineStageFlags(const VulkanDeviceQueue* device_queue, const VkImageLayout layout)
 
 {
   switch (layout)
     {
-    case VK_IMAGE_LAYOUT_UNDEFINED:
-      return VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
-      
-    case VK_IMAGE_LAYOUT_GENERAL:
-      return VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
-      
-    case VK_IMAGE_LAYOUT_PREINITIALIZED:
-      return VK_PIPELINE_STAGE_HOST_BIT;
-      
-    case VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL:
-      
-    case VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL:
-      return VK_PIPELINE_STAGE_TRANSFER_BIT;
-      
-    case VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL:
-      return VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-      
+    case VK_IMAGE_LAYOUT_UNDEFINED: return VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+    case VK_IMAGE_LAYOUT_GENERAL: return VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
+    case VK_IMAGE_LAYOUT_PREINITIALIZED: return VK_PIPELINE_STAGE_HOST_BIT; 
+    //case VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL:
+    case VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL: return VK_PIPELINE_STAGE_TRANSFER_BIT;
+    case VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL: return VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
     case VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL: {
-      VkPipelineStageFlags flags = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT |
-                                   VK_PIPELINE_STAGE_VERTEX_SHADER_BIT;
+      VkPipelineStageFlags flags = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT | VK_PIPELINE_STAGE_VERTEX_SHADER_BIT;
       
       if (device_queue->enabled_device_features().tessellationShader) 
       {
-        flags |= VK_PIPELINE_STAGE_TESSELLATION_CONTROL_SHADER_BIT |
-                 VK_PIPELINE_STAGE_TESSELLATION_EVALUATION_SHADER_BIT;
+        flags |= VK_PIPELINE_STAGE_TESSELLATION_CONTROL_SHADER_BIT | VK_PIPELINE_STAGE_TESSELLATION_EVALUATION_SHADER_BIT;
       }
       if (device_queue->enabled_device_features().geometryShader) 
       {
@@ -48,56 +33,35 @@ VkPipelineStageFlags GetPipelineStageFlags(
       }
       return flags;
     }
-    case VK_IMAGE_LAYOUT_PRESENT_SRC_KHR:
-      return VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
-      
-    default:
-      NOTREACHED() << "layout=" << layout;
+    case VK_IMAGE_LAYOUT_PRESENT_SRC_KHR: return VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
+    default: NOTREACHED() << "layout=" << layout;
   }
 }
 
 VkAccessFlags GetAccessMask(const VkImageLayout layout) {
   switch (layout) 
   {
-    case VK_IMAGE_LAYOUT_UNDEFINED:
-      return 0;
+    case VK_IMAGE_LAYOUT_UNDEFINED: return 0;
     
-    case VK_IMAGE_LAYOUT_GENERAL:
-      LOG(WARNING) << "VK_IMAGE_LAYOUT_GENERAL is used.";
-      return VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT |
-             VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT |
-             VK_ACCESS_TRANSFER_WRITE_BIT | VK_ACCESS_TRANSFER_READ_BIT |
-             VK_ACCESS_SHADER_READ_BIT | VK_ACCESS_HOST_WRITE_BIT |
-             VK_ACCESS_HOST_READ_BIT | VK_ACCESS_INPUT_ATTACHMENT_READ_BIT |
-             VK_ACCESS_COLOR_ATTACHMENT_READ_BIT |
-             VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT |
-             VK_ACCESS_MEMORY_READ_BIT | VK_ACCESS_MEMORY_WRITE_BIT;
-    case VK_IMAGE_LAYOUT_PREINITIALIZED:
-      return VK_ACCESS_HOST_WRITE_BIT;
-    case VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL:
-      return VK_ACCESS_COLOR_ATTACHMENT_READ_BIT |
-             VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-    case VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL:
-      return VK_ACCESS_SHADER_READ_BIT | VK_ACCESS_INPUT_ATTACHMENT_READ_BIT;
-    case VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL:
-      return VK_ACCESS_TRANSFER_READ_BIT;
-    case VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL:
-      return VK_ACCESS_TRANSFER_WRITE_BIT;
-    case VK_IMAGE_LAYOUT_PRESENT_SRC_KHR:
-      return 0;
-    default:
-      NOTREACHED() << "layout=" << layout;
+    case VK_IMAGE_LAYOUT_GENERAL: LOG(WARNING) << "VK_IMAGE_LAYOUT_GENERAL is used.";
+      return VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT |  VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT |
+             VK_ACCESS_TRANSFER_WRITE_BIT | VK_ACCESS_TRANSFER_READ_BIT | VK_ACCESS_SHADER_READ_BIT | VK_ACCESS_HOST_WRITE_BIT |
+             VK_ACCESS_HOST_READ_BIT | VK_ACCESS_INPUT_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_READ_BIT |
+             VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT | VK_ACCESS_MEMORY_READ_BIT | VK_ACCESS_MEMORY_WRITE_BIT;
+    case VK_IMAGE_LAYOUT_PREINITIALIZED: return VK_ACCESS_HOST_WRITE_BIT;
+    case VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL: return VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+    case VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL: return VK_ACCESS_SHADER_READ_BIT | VK_ACCESS_INPUT_ATTACHMENT_READ_BIT;
+    case VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL: return VK_ACCESS_TRANSFER_READ_BIT;
+    case VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL: return VK_ACCESS_TRANSFER_WRITE_BIT;
+    case VK_IMAGE_LAYOUT_PRESENT_SRC_KHR: return 0;
+    default: NOTREACHED() << "layout=" << layout;
   }
 }
 
 }  // namespace
 
-VulkanCommandBuffer::VulkanCommandBuffer(VulkanDeviceQueue* device_queue,
-                                         VulkanCommandPool* command_pool,
-                                         bool primary)
-    : primary_(primary),
-      device_queue_(device_queue),
-      command_pool_(command_pool) {
+VulkanCommandBuffer::VulkanCommandBuffer(VulkanDeviceQueue* device_queue, VulkanCommandPool* command_pool, bool primary) : primary_(primary),
+      device_queue_(device_queue), command_pool_(command_pool) {
   command_pool_->IncrementCommandBufferCount();
 }
 
@@ -116,8 +80,7 @@ bool VulkanCommandBuffer::Initialize() {
       .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
       .pNext = nullptr,
       .commandPool = command_pool_->handle(),
-      .level = primary_ ? VK_COMMAND_BUFFER_LEVEL_PRIMARY
-                        : VK_COMMAND_BUFFER_LEVEL_SECONDARY,
+      .level = primary_ ? VK_COMMAND_BUFFER_LEVEL_PRIMARY : VK_COMMAND_BUFFER_LEVEL_SECONDARY,
       .commandBufferCount = 1,
   };
 
@@ -150,15 +113,12 @@ void VulkanCommandBuffer::Destroy()
   }
 }
 
-bool VulkanCommandBuffer::Submit(uint32_t num_wait_semaphores,
-                                 VkSemaphore* wait_semaphores,
-                                 uint32_t num_signal_semaphores,
-                                 VkSemaphore* signal_semaphores,
-                                 bool allow_protected_memory) {
+bool VulkanCommandBuffer::Submit(uint32_t num_wait_semaphores, VkSemaphore* wait_semaphores, uint32_t num_signal_semaphores,
+                                 VkSemaphore* signal_semaphores, bool allow_protected_memory) 
+{
   DCHECK(primary_);
 
-  std::vector<VkPipelineStageFlags> wait_dst_stage_mask(
-      num_wait_semaphores, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT);
+  std::vector<VkPipelineStageFlags> wait_dst_stage_mask(num_wait_semaphores, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT);
 
   VkProtectedSubmitInfo protected_submit_info = {};
   protected_submit_info.sType = VK_STRUCTURE_TYPE_PROTECTED_SUBMIT_INFO;
@@ -190,7 +150,8 @@ bool VulkanCommandBuffer::Submit(uint32_t num_wait_semaphores,
   if (VK_SUCCESS != result) {
     vkDestroyFence(device_queue_->GetVulkanDevice(), fence, nullptr);
     submission_fence_ = VulkanFenceHelper::FenceHandle();
-  } else {
+  }
+  else {
     submission_fence_ = device_queue_->GetFenceHelper()->EnqueueFence(fence);
   }
 
@@ -212,30 +173,23 @@ void VulkanCommandBuffer::Enqueue(VkCommandBuffer primary_command_buffer) {
 
 void VulkanCommandBuffer::Clear() {
   // Mark to reset upon next use.
-  if (record_type_ != RECORD_TYPE_EMPTY)
-    record_type_ = RECORD_TYPE_DIRTY;
+  if (record_type_ != RECORD_TYPE_EMPTY) record_type_ = RECORD_TYPE_DIRTY;
 }
 
 void VulkanCommandBuffer::Wait(uint64_t timeout) {
-  if (!submission_fence_.is_valid())
-    return;
-
+  if (!submission_fence_.is_valid()) return;
   device_queue_->GetFenceHelper()->Wait(submission_fence_, timeout);
 }
 
 bool VulkanCommandBuffer::SubmissionFinished() {
   if (!submission_fence_.is_valid())
     return true;
-
   return device_queue_->GetFenceHelper()->HasPassed(submission_fence_);
 }
 
-void VulkanCommandBuffer::TransitionImageLayout(
-    VkImage image,
-    VkImageLayout old_layout,
-    VkImageLayout new_layout,
-    uint32_t src_queue_family_index,
-    uint32_t dst_queue_family_index) {
+void VulkanCommandBuffer::TransitionImageLayout(VkImage image, VkImageLayout old_layout,
+    VkImageLayout new_layout, uint32_t src_queue_family_index, uint32_t dst_queue_family_index) 
+{
   VkImageMemoryBarrier barrier = {};
   barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
   barrier.srcAccessMask = GetAccessMask(old_layout);
@@ -250,19 +204,14 @@ void VulkanCommandBuffer::TransitionImageLayout(
   barrier.subresourceRange.levelCount = 1;
   barrier.subresourceRange.baseArrayLayer = 0;
   barrier.subresourceRange.layerCount = 1;
-  vkCmdPipelineBarrier(command_buffer_,
-                       GetPipelineStageFlags(device_queue_, old_layout),
-                       GetPipelineStageFlags(device_queue_, new_layout), 0, 0,
-                       nullptr, 0, nullptr, 1, &barrier);
+  vkCmdPipelineBarrier(command_buffer_, GetPipelineStageFlags(device_queue_, old_layout),
+                       GetPipelineStageFlags(device_queue_, new_layout), 0, 0, nullptr, 0, nullptr, 1, &barrier);
 }
 
-void VulkanCommandBuffer::CopyBufferToImage(VkBuffer buffer,
-                                            VkImage image,
-                                            uint32_t buffer_width,
-                                            uint32_t buffer_height,
-                                            uint32_t width,
-                                            uint32_t height,
-                                            uint64_t buffer_offset) {
+void VulkanCommandBuffer::CopyBufferToImage(VkBuffer buffer, VkImage image,
+                                            uint32_t buffer_width, uint32_t buffer_height,
+                                            uint32_t width, uint32_t height, uint64_t buffer_offset) 
+{
   VkBufferImageCopy region = {};
   region.bufferOffset = buffer_offset;
   region.bufferRowLength = buffer_width;
@@ -273,17 +222,13 @@ void VulkanCommandBuffer::CopyBufferToImage(VkBuffer buffer,
   region.imageSubresource.layerCount = 1;
   region.imageOffset = {0, 0, 0};
   region.imageExtent = {width, height, 1};
-  vkCmdCopyBufferToImage(command_buffer_, buffer, image,
-                         VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
+  vkCmdCopyBufferToImage(command_buffer_, buffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
 }
 
-void VulkanCommandBuffer::CopyImageToBuffer(VkBuffer buffer,
-                                            VkImage image,
-                                            uint32_t buffer_width,
-                                            uint32_t buffer_height,
-                                            uint32_t width,
-                                            uint32_t height,
-                                            uint64_t buffer_offset) {
+void VulkanCommandBuffer::CopyImageToBuffer(VkBuffer buffer, VkImage image,
+                                            uint32_t buffer_width, uint32_t buffer_height,
+                                            uint32_t width, uint32_t height, uint64_t buffer_offset) 
+{
   VkBufferImageCopy region = {};
   region.bufferOffset = buffer_offset;
   region.bufferRowLength = buffer_width;
@@ -294,9 +239,7 @@ void VulkanCommandBuffer::CopyImageToBuffer(VkBuffer buffer,
   region.imageSubresource.layerCount = 1;
   region.imageOffset = {0, 0, 0};
   region.imageExtent = {width, height, 1};
-  vkCmdCopyImageToBuffer(command_buffer_, image,
-                         VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, buffer, 1,
-                         &region);
+  vkCmdCopyImageToBuffer(command_buffer_, image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, buffer, 1, &region);
 }
 void VulkanCommandBuffer::PostExecution() {
   if (record_type_ == RECORD_TYPE_SINGLE_USE) {
@@ -304,7 +247,6 @@ void VulkanCommandBuffer::PostExecution() {
     record_type_ = RECORD_TYPE_DIRTY;
   } 
   else if (record_type_ == RECORD_TYPE_MULTI_USE) {
-
     record_type_ = RECORD_TYPE_RECORDED;
   }
 }
@@ -331,8 +273,8 @@ CommandBufferRecorderBase::~CommandBufferRecorderBase() {
 }
 
 ScopedMultiUseCommandBufferRecorder::ScopedMultiUseCommandBufferRecorder(
-    VulkanCommandBuffer& command_buffer)
-    : CommandBufferRecorderBase(command_buffer) {
+    VulkanCommandBuffer& command_buffer) : CommandBufferRecorderBase(command_buffer) 
+{
   ValidateMultiUse(command_buffer);
   VkCommandBufferBeginInfo begin_info = {};
   begin_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -344,8 +286,8 @@ ScopedMultiUseCommandBufferRecorder::ScopedMultiUseCommandBufferRecorder(
 }
 
 ScopedSingleUseCommandBufferRecorder::ScopedSingleUseCommandBufferRecorder(
-    VulkanCommandBuffer& command_buffer)
-    : CommandBufferRecorderBase(command_buffer) {
+    VulkanCommandBuffer& command_buffer) : CommandBufferRecorderBase(command_buffer) 
+{
   ValidateSingleUse(command_buffer);
   VkCommandBufferBeginInfo begin_info = {};
   begin_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
