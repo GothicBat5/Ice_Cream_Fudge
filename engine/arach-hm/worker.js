@@ -3,6 +3,7 @@ import { cli, filesystem } from '@bytecodealliance/preview2-shim';
 import { instantiate } from "./js.wasm" with { type: "wasi-0.1", instantiation: "async" };
 
 let moduleMap = new Map();
+
 function loader(name) 
 {
   return moduleMap.get(name);
@@ -13,8 +14,8 @@ const magic = "=-=-=-=-=-=-= HERE BEGINS THE JSON =-=-=-=-=-=-=";
 async function run(input) 
 {
   const component = await instantiate(loader, new WASIShim().getImportObject());
-
   const program = `${input}
+  
     print("${magic}");
     print(os.file.readFile("/tmp/ion.json"));
   `;
@@ -49,29 +50,17 @@ async function run(input)
 
     let rawJSON = stdout.slice(stdout.indexOf(magic) + magic.length).trim();
     const ionJSON = JSON.parse(rawJSON ? rawJSON + "]}" : `{ "version": 1, "functions": [] }`);
-
-    postMessage({ok: true,
-      ionJSON,
-      stdout,
-      stderr,
-    });
+    postMessage({ok: true, ionJSON, stdout, stderr,});
     
   } 
   catch (e) 
   {
     if (e.exitError) 
     {
-      postMessage({ok: false,
-        stdout,
-        stderr,
-      });
+      postMessage({ok: false, stdout, stderr, });
     } 
     else {
-      postMessage({ok: false,
-        stdout,
-        stderr: "Bug in this demo! See console for details.",
-      });
-      throw e;
+      postMessage({ok: false, stdout, stderr: "Bug in this demo! See console for details.",}); throw e;
     }
   }
 }
@@ -82,6 +71,7 @@ onmessage = e => {
     case "receiveModules": {
       moduleMap = e.data.moduleMap;
     } break;
+      
     case "runProgram": {
       run(e.data.program);
     } break;
