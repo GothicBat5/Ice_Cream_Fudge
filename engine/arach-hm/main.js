@@ -1,6 +1,7 @@
 'use strict';
 
-function generateColors(searchParams) {
+function generateColors(searchParams) 
+{
   var primary = Math.round(360 * Math.random());
   var secondary = Math.round(360 * Math.random());
   var lightness = Math.round(100 * Math.random());
@@ -10,20 +11,23 @@ function generateColors(searchParams) {
   window.location.search = searchParams;
 }
 
-function clearColors(searchParams) {
+function clearColors(searchParams) 
+{
   searchParams.delete("primary");
   searchParams.delete("secondary");
   searchParams.delete("lightness");
 }
 
-function generateLightness(lightness) {
+function generateLightness(lightness) 
+{
   var secondary = ((lightness/2) + 75) % 100;
   var dim = ((lightness/5) + 75) % 100;
   var secondarydim = ((dim/2) + 75) % 100;
   return [secondary, dim, secondarydim]
 }
 
-function setColorsFromURL(searchParams) {
+function setColorsFromURL(searchParams) 
+{
   var primary = searchParams.get("primary");
   var secondary = searchParams.get("secondary");
   var lightness = searchParams.get("lightness");
@@ -71,6 +75,7 @@ document
 .addEventListener('click', function(ev) 
  {
   var searchParams = new URLSearchParams(location.search);
+   
   if (searchParams.has("primary") === true) 
   {
   clearColors(searchParams);
@@ -80,7 +85,8 @@ document
 
 document
 .querySelector('.color-clear')
-.addEventListener('click', function(ev) {
+.addEventListener('click', function(ev)
+{
   var searchParams = new URLSearchParams(location.search);
   clearColors(searchParams);
   location.search = searchParams;
@@ -89,8 +95,10 @@ document
 /**
  * Actions we want to take place after the page has finished loading
 */
-window.addEventListener('DOMContentLoaded', function() {
-  var searchParams = new URLSearchParams(location.search);
+window.addEventListener('DOMContentLoaded', function()
+{
+  var searchParams = new URLSearchParams(location.search)
+                          
   if (searchParams.has("primary") === true) {
     setColorsFromURL(searchParams);
   }
