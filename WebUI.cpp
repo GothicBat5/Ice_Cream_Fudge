@@ -20,10 +20,7 @@ namespace webui {
 
 void SetJSModuleDefaults(content::WebUIDataSource* source) 
 {
-  std::string scheme = base::StartsWith(source->GetSource(), content::kChromeUIUntrustedScheme)
-          ? content::kChromeUIUntrustedScheme
-          : content::kChromeUIScheme;
-
+  std::string scheme = base::StartsWith(source->GetSource(), content::kChromeUIUntrustedScheme) ? content::kChromeUIUntrustedScheme : content::kChromeUIScheme;
   source->OverrideContentSecurityPolicy(network::mojom::CSPDirectiveName::DefaultSrc, "default-src 'self';");
 
   if (scheme == content::kChromeUIScheme) 
